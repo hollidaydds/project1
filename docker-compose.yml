@@ -1,0 +1,29 @@
+version: '2'
+services:
+  phpserver:
+    build: ./docker/php
+    volumes:
+      - /Users/stringhamdb/Sandbox/project1/app:/var/www/html
+      - /Users/stringhamdb/Sandbox/project1/vendor:/var/www/vendor
+      - /Users/stringhamdb/Sandbox/project1/src:/var/www/src
+    links:
+      - mysqlserver
+      - redisserver
+  mysqlserver:
+    image: mysql/mysql-server
+    environment:
+      MYSQL_DATABASE: dockerfordevs
+      MYSQL_ROOT_PASSWORD: docker
+    volumes:
+      - /var/lib/mysql
+  redisserver:
+    image: redis
+    volumes:
+      - /data
+  nginx:
+    build: ./docker/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - phpserver
