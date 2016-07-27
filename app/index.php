@@ -4,13 +4,8 @@
  * Project: project1
  * PHP version 5
  * @category  PHP
- * @author    donbstringham <donbstringham@gmail.com>
- * @copyright 2016 © donbstringham
- * @license   http://opensource.org/licenses/MIT MIT
- * @version   GIT: <git_id>
- * @link      http://donbstringham.us
- * $LastChangedDate$
- * $LastChangedBy$
+ * @author    Ian Hale <ianhale2320@gmail.com>
+
  */
 
 use Symfony\Component\HttpFoundation\Request;
@@ -119,17 +114,53 @@ $app->delete('/users/{id}', function ($id) use ($dic) {
 });
 
 $app->post('/users', function (Request $request) use ($dic) {
+
+    $repo = $dic['repo-mem'];
+    $post = array(
+        'email' => $request->request->get('email'),
+        'name' => $request->request->get('name'),
+        'username' => $request->request->get('username')
+
+    );
+
+    $user = new User(
+        new StringLiteral($post['email']),
+        new StringLiteral($post['name']),
+        new StringLiteral($post['username'])
+    );
+    $count = $repo->count();
+    $user->setId(new StringLiteral($count));
+    $repo->add($user);
     $response = new Response();
     $response->setStatusCode(501);
 
-    return $response;
+    return $dic->json($post, $response);
 });
 
 $app->put('/users/{id}', function ($id, Request $request) use ($dic) {
+
+    $repo = $dic['repo-mem'];
+
+    $post = array(
+        'email' => $request->request->get('email'),
+        'name' => $request->request->get('name'),
+        'username' => $request->request->get('username')
+
+    );
+
+    $user = new User(
+        new StringLiteral($post['email']),
+        new StringLiteral($post['name']),
+        new StringLiteral($post['username'])
+    );
+    $repo->delete($id);
+    $repo->add($user);
+    $user->setId(new StringLiteral($id));
     $response = new Response();
     $response->setStatusCode(501);
 
     return $response;
+
 });
 
 $app->run();
