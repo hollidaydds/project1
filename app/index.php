@@ -195,6 +195,8 @@ function bootstrap()
         return new MysqlUserRepository($pdo);
     };
 
+
+
     $dic['repo-mem'] = function() {
         $bill = new User(
             new StringLiteral('bill@email.com'),
